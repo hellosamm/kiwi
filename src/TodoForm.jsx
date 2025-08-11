@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useRef } from "react";
 
-export default function TodoForm({ newTodo, setNewTodo }) {
+export default function TodoForm({ onAddTodo }) {
+  const todoTitleInput = useRef(null);
+
+  function handleAddTodo(event) {
+    event.preventDefault();
+
+    const title = event.target.title.value;
+    onAddTodo(title);
+    event.target.title.value = "";
+    todoTitleInput.current.focus();
+  }
+
   return (
     <div>
-      <form action="">
+      <form onSubmit={handleAddTodo}>
         <input
+          ref={todoTitleInput}
           type="text"
-          name="todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
+          name="title"
           id=""
           placeholder="add a task to your todo list"
         />

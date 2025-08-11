@@ -1,7 +1,7 @@
 import React from "react";
 import TodoListItem from "./TodoListItem";
 
-export default function TodoList({ todos }) {
+export default function TodoList({ todoList }) {
   // const todos = [
   //   { id: 1, title: "order fabric" },
   //   { id: 2, title: "design quilt pattern" },
@@ -11,7 +11,7 @@ export default function TodoList({ todos }) {
   return (
     <div>
       <ul>
-        {todos.map((todo) => (
+        {todoList.map((todo) => (
           <TodoListItem key={todo.id} todo={todo} />
         ))}
       </ul>
