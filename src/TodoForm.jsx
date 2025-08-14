@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 export default function TodoForm({ onAddTodo }) {
-  const todoTitleInput = useRef(null);
+  const todoTitleInput = useRef("");
   const [workingTodoTitle, setWorkingTodoTitle] = useState("");
 
   function handleAddTodo(event) {
