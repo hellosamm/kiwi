@@ -12,6 +12,7 @@ function App() {
     import.meta.env.VITE_TABLE_NAME
   }`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -65,15 +66,55 @@ function App() {
     setTodoList(updatedTodos);
   }
 
-  function addTodo(title) {
-    const newTodo = {
-      title: title,
-      id: Date.now(),
-      isCompleted: false,
+  const addTodo = async (newTodo) => {
+    const payload = {
+      records: [
+        {
+          fields: {
+            title: newTodo.title,
+            isCompleted: newTodo.isCompleted,
+          },
+        },
+      ],
     };
 
-    setTodoList([...todoList, newTodo]);
-  }
+    const options = {
+      method: "POST",
+      headers: { Authorization: token, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    };
+
+    setIsSaving(true);
+
+    try {
+      console.log(
+        "Payload being sent to Airtable:",
+        JSON.stringify(payload, null, 2)
+      );
+      const resp = await fetch(url, options);
+
+      if (!resp.ok) {
+        throw new Error(resp.message);
+      }
+
+      const { records } = await resp.json();
+
+      const savedTodos = {
+        id: records[0].id,
+        ...records[0].fields,
+      };
+
+      if (!savedTodos.isCompleted) {
+        savedTodos.isCompleted = false;
+      }
+
+      setTodoList([...todoList, savedTodos]);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   function completeTodo(todoId) {
     const updatedTodos = todoList.map((todo) => {
@@ -90,7 +131,7 @@ function App() {
   return (
     <div>
       <h1>My Todos</h1>
-      <TodoForm onAddTodo={addTodo} />
+      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       <TodoList
         todoList={todoList}
         onCompleteTodo={completeTodo}
