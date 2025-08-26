@@ -29,11 +29,19 @@ export default function TodoList({
 
   const noTodos = (
     <div>
-      {isLoading ? <p>Todo list loading... </p> : <p>not loading</p>}
-
       <p>Add a todo above to get started</p>
     </div>
   );
 
-  return <div>{filteredTodoList.length > 0 ? displayTodos : noTodos}</div>;
+  return (
+    <div>
+      {isLoading ? (
+        <p>Todo list loading... </p>
+      ) : filteredTodoList.length > 0 ? (
+        displayTodos
+      ) : (
+        noTodos
+      )}
+    </div>
+  );
 }
