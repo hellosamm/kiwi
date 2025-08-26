@@ -1,7 +1,12 @@
 import React from "react";
 import TodoListItem from "./TodoListItem";
 
-export default function todoList({ todoList, onCompleteTodo, onUpdateTodo }) {
+export default function TodoList({
+  todoList,
+  onCompleteTodo,
+  onUpdateTodo,
+  isLoading,
+}) {
   // const todos = [
   //   { id: 1, title: "order fabric" },
   //   { id: 2, title: "design quilt pattern" },
@@ -28,5 +33,15 @@ export default function todoList({ todoList, onCompleteTodo, onUpdateTodo }) {
     </div>
   );
 
-  return <div>{filteredTodoList.length > 0 ? displayTodos : noTodos}</div>;
+  return (
+    <div>
+      {isLoading ? (
+        <p>Todo list loading... </p>
+      ) : filteredTodoList.length > 0 ? (
+        displayTodos
+      ) : (
+        noTodos
+      )}
+    </div>
+  );
 }
