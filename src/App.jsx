@@ -54,7 +54,47 @@ function App() {
     fetchTodos();
   }, []);
 
-  function updateTodo(editedTodo) {
+  const updateTodo = async (editedTodo) => {
+    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+
+    const payload = {
+      records: [
+        {
+          id: editedTodo.id,
+          fields: {
+            title: editedTodo.title,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: "PATCH",
+      headers: { Authorization: token, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      // console.log(
+      //   "Payload being sent to Airtable:",
+      //   JSON.stringify(payload, null, 2)
+      // );
+      const resp = await fetch(url, options);
+
+      if (!resp.ok) {
+        throw new Error(resp.message);
+      }
+    } catch (error) {
+      setErrorMessage(`${error.message}. Reverting todo...`);
+      const revertedTodos = todoList.map((todo) =>
+        todo.id === origin.id ? originalTodo : todo
+      );
+      setTodoList(revertedTodos);
+    } finally {
+      setIsSaving(false);
+    }
+
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === editedTodo.id) {
         return { ...editedTodo };
@@ -64,7 +104,7 @@ function App() {
     });
 
     setTodoList(updatedTodos);
-  }
+  };
 
   const addTodo = async (newTodo) => {
     const payload = {
@@ -116,17 +156,58 @@ function App() {
     }
   };
 
-  function completeTodo(todoId) {
+  const completeTodo = async (todoId) => {
+    const originalTodo = todoList.find((todo) => todo.id === todoId);
+
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === todoId) {
         return { ...todo, isCompleted: true };
       }
-
-      return todo;
     });
 
     setTodoList(updatedTodos);
-  }
+
+    const payload = {
+      records: [
+        {
+          id: todoId,
+          fields: {
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: "PATCH",
+      headers: { Authorization: token, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    };
+
+    setIsSaving(true);
+
+    try {
+      // console.log(
+      //   "Payload being sent to Airtable:",
+      //   JSON.stringify(payload, null, 2)
+      // );
+      const resp = await fetch(url, options);
+
+      if (!resp.ok) {
+        throw new Error(resp.message);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      const revertedTodos = todoList.map((todo) => {
+        if (todo.id == todoId) {
+          return originalTodo;
+        }
+      });
+      setTodoList(revertedTodos);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div>
