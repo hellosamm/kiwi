@@ -1,7 +1,7 @@
 import React from "react";
 import TodoListItem from "./TodoListItem";
 
-export default function todoList({ todoList, onCompleteTodo }) {
+export default function todoList({ todoList, onCompleteTodo, onUpdateTodo }) {
   // const todos = [
   //   { id: 1, title: "order fabric" },
   //   { id: 2, title: "design quilt pattern" },
@@ -16,6 +16,7 @@ export default function todoList({ todoList, onCompleteTodo }) {
           key={todo.id}
           todo={todo}
           onCompleteTodo={onCompleteTodo}
+          onUpdateTodo={onUpdateTodo}
         />
       ))}
     </ul>
